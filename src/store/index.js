@@ -1,15 +1,19 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from "vue";
+import Vuex from "vuex";
 
-Vue.use(Vuex)
+import actions from "@/store/actions";
+import store from "@/store/store";
+import mutations from "@/store/mutations";
+
+import services from "@/store/modules/services.store";
+
+Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
   modules: {
-  }
-})
+    services: services,
+  },
+  store: store,
+  mutations: mutations,
+  actions: actions
+});
