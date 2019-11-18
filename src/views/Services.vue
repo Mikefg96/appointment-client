@@ -15,10 +15,76 @@
             </div>
         </div>
     </div>
-    <div v-else>
-        {{serviceToRegister}}
+    <div class="register-wrapper" v-else>
+        <div class="row">
+            <div class="col-6" align="center">
+                <img class="w-80" src="../assets/img/undraw_fill_forms.svg" alt="">
+            </div>
+            <div class="col-6" align="center">
+                <d-card style="max-width: 300px">
+                    <d-card-header>{{ serviceToRegister.name }}</d-card-header>
+                    <d-card-body>
+                        <!-- <d-form> -->
+                            <d-input class="mb2" placeholder="Nombre" v-model="name"/>
+                            <d-input class="mb2" placeholder="Apellido" v-model="lastName"/>
+                            <VueCtkDateTimePicker v-model="appointmentDate"></VueCtkDateTimePicker>
+                            <d-button class="mt2 mr2" theme="success" @click="addAppointment()">Agendar</d-button>
+                            <d-button class="mt2 ml2" theme="danger" outline @click="returnToServices()">Regresar</d-button>
+                        <!-- </d-form> -->
+                    </d-card-body>
+                    <d-card-footer class="tl">Costo: ${{serviceToRegister.price}}</d-card-footer>
+                </d-card>
+            </div>
+        </div>
     </div>
 </template>
+
+<script>
+import { mapGetters } from "vuex";
+const servicesModule = "services";
+const appointmentsModule = "appointments"
+
+export default {
+    name: 'services',
+    data() {
+        return {
+            isRegistering: false,
+            serviceToRegister: {},
+            appointmentDate: null
+        }
+    },
+    methods: {
+        getServices() {
+            this.$store.dispatch(`${servicesModule}/getServices`);
+        },
+        loadRegisterForm(service) {
+            this.isRegistering = true;
+            this.serviceToRegister = service;
+        },
+        returnToServices() {
+            this.isRegistering = false;
+            this.serviceToRegister = {}
+        },
+        addAppointment() {
+            const appointment = {
+                name: this.name,
+                lastName: this.lastName,
+                date: this.appointmentDate,
+                service_id: this.serviceToRegister._id
+            }
+            
+            this.$store.dispatch(`${appointmentsModule}/createAppointment`, appointment);
+            this.$router.push({ path: '/' });
+        }
+    },
+    computed: {
+		...mapGetters(servicesModule, ["availableServices"])
+	},
+    mounted() {
+        this.getServices();
+    }
+}
+</script>
 
 <style lang="scss" scoped>
 	@import url('https://fonts.googleapis.com/css?family=Raleway:100,400,600&display=swap');
@@ -27,6 +93,7 @@
         height: 100vh;
         width: 100%;
         background-color: #f5f8ff;
+        overflow: hidden;
 
         display: flex;
         align-items: center;
@@ -47,38 +114,20 @@
             }
 
             .card-footer {
-                text-align: right !important;
+                text-align: right;
             }
         }
     }
-</style>
 
-<script>
-import { mapGetters } from "vuex";
-const storeModule = "services";
+    .register-wrapper {
+        height: 100vh;
+        width: 100%;
+        background-color: #f5f8ff;
 
-export default {
-    name: 'services',
-    data() {
-        return {
-            isRegistering: false,
-            serviceToRegister: {}
+        .row {
+            height: 100%;
+            width: 100%;
+            align-content: center;
         }
-    },
-    methods: {
-        getServices() {
-            this.$store.dispatch(`${storeModule}/getServices`);
-        },
-        loadRegisterForm(service) {
-            this.isRegistering = true;
-            this.serviceToRegister = service;
-        }
-    },
-    computed: {
-		...mapGetters(storeModule, ["availableServices"])
-	},
-    mounted() {
-        this.getServices();
     }
-}
-</script>
+</style>

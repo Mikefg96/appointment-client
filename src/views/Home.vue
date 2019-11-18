@@ -6,7 +6,7 @@
 				<h2>Sin espera, sin demora.</h2>
 				<div>
 					<d-button theme="info" @click="loadServices()">Revisar catálogo</d-button>
-					<d-button outline theme="info">Ver citas</d-button>
+					<d-button outline theme="info" @click="loadAppointments()">Ver citas</d-button>
 				</div>
 			</div>
 			<div class="col-6">
@@ -15,6 +15,20 @@
 		</div>
 	</div>
 </template>
+
+<script>
+export default {
+	name: 'home',
+	methods: {
+		loadServices() {
+			this.$router.push({ path: 'services' });
+		},
+		loadAppointments() {
+			this.$router.push({ path: 'appointments' });
+		}
+	}
+}
+</script>
 
 <style lang="scss" scoped>
 	@import url('https://fonts.googleapis.com/css?family=Raleway:100,400,600&display=swap');
@@ -59,14 +73,3 @@
 		}
 	}
 </style>
-
-<script>
-export default {
-	name: 'home',
-	methods: {
-		loadServices() {
-			this.$router.push({ path: 'services' });
-		}
-	}
-}
-</script>
