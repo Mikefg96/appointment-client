@@ -25,10 +25,10 @@
                     <d-card-header>{{ serviceToRegister.name }}</d-card-header>
                     <d-card-body>
                         <!-- <d-form> -->
-                            <d-input class="mb2" placeholder="Nombre" v-model="name"/>
-                            <d-input class="mb2" placeholder="Apellido" v-model="lastName"/>
+                            <d-input class="mb2" placeholder="Nombre" v-model="name" name="name"/>
+                            <d-input class="mb2" placeholder="Apellido" v-model="lastName" name="lastName"/>
                             <VueCtkDateTimePicker v-model="appointmentDate"></VueCtkDateTimePicker>
-                            <d-button class="mt2 mr2" theme="success" @click="addAppointment()">Agendar</d-button>
+                            <d-button id="btnRegister" class="mt2 mr2" theme="success" @click="addAppointment()">Agendar</d-button>
                             <d-button class="mt2 ml2" theme="danger" outline @click="returnToServices()">Regresar</d-button>
                         <!-- </d-form> -->
                     </d-card-body>

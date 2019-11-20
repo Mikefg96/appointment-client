@@ -1,6 +1,9 @@
 .DS_Store
 node_modules
 /dist
+tests_output
+.browserslistrc
+chomedriver.log
 
 # local env files
 .env.local
