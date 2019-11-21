@@ -5,8 +5,8 @@
 				<h1>Appointment.</h1>
 				<h2>Sin espera, sin demora.</h2>
 				<div>
-					<d-button theme="info" @click="loadServices()">Revisar catálogo</d-button>
-					<d-button outline theme="info" @click="loadAppointments()">Ver citas</d-button>
+					<d-button id="btnCatalogue" theme="info" @click="loadServices()">Revisar catálogo</d-button>
+					<d-button id="btnAppointments" outline theme="info" @click="loadAppointments()">Ver citas</d-button>
 				</div>
 			</div>
 			<div class="col-6">

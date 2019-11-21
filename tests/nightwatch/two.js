@@ -1,14 +1,18 @@
+TODO: 'Crear un after function para borrar el servicio de prueba creado por e2e.'
 module.exports = {
-    'Return to landing from register form' : function (browser) {
+    'Load services and create a new one' : function (browser) {
       browser
         .url('http://localhost:8080/services')
         .waitForElementVisible('.services-wrapper', 1000)
-        .click('.services-wrapper > .row > .col-4:first-child > div > div:last-child > button')
+        .click('#btnLoadServiceRegister')
         .pause(1500)
-        .waitForElementVisible('.register-wrapper', 1000)
-        .click('.register-wrapper > .row > .col-6:last-child > div > div:nth-child(2) > button:last-child')
+        .waitForElementVisible('.serviceRegister-wrapper', 1000)
+        .setValue('input[name="serviceName"]', 'Test Service')
+        .setValue('input[name="servicePrice"]', 0)
+        .pause(1000)
+        .click('#btnAddService')
         .pause(1500)
         .waitForElementVisible('.services-wrapper', 1000)
-        .end();
+        .end()
     }
 };

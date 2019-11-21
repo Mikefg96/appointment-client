@@ -21,15 +21,15 @@
                                 <td>{{ appointment.lastName }}</td>
                                 <td>{{ appointment.service_id.name }}</td>
                                 <td>{{ appointment.date }}</td>
-                                <td @click="deleteAppointment(appointment._id, index)">
-                                    <d-badge theme="danger" class="pointer">ELIMINAR</d-badge>
+                                <td>
+                                    <d-button id="btnDeleteAppointment" theme="danger" outline  @click="deleteAppointment(appointment._id, index)">ELIMINAR</d-button>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </d-card-body>
             </d-card>
-            <d-button theme="info" class="mt-2 fr" outline @click="returnToLanding()">Regresar</d-button>
+            <d-button id="btnReturnToLanding" theme="info" class="mt-2 fr" outline @click="returnToLanding()">Regresar</d-button>
         </div>
     </div>
 </template>
@@ -53,7 +53,17 @@ export default {
                 appointment_id: appointment_id,
                 index: index
             }
-            this.$store.dispatch(`${appointmentsModule}/deleteAppointment`, data);
+            this.$store.dispatch(`${appointmentsModule}/deleteAppointment`, data).then(() => {
+                this.$toasted.show("¡Has eliminado una cita!", {
+                    type: "error",
+                    action: {
+                        text: "Okay",
+                        onClick: (e, toastObject) => {
+                            toastObject.goAway(0);
+                        }
+                    }
+                });
+            });
         },
         returnToLanding() {
             this.$router.push({ path: '/' });

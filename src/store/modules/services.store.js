@@ -9,17 +9,29 @@ const getters = {
 };
 
 const mutations = {
-    PUSH_SERVICES(state, services) {
+    GET_SERVICES(state, services) {
         state.services = services;
+    },
+    PUSH_SERVICE(state, service) {
+        state.services.push(service);
     }
 };
 
 const actions = {
-    // Regresa todas los servicios disponibles
     getServices({ commit }) {
         servicesApi.getServices(
             result => {
-                commit('PUSH_SERVICES', result.data.data)
+                commit('GET_SERVICES', result.data.data)
+            },
+            error => {
+                return error;
+            }
+        );
+    },
+    createService({ commit }, data) {
+        servicesApi.createService(data,
+            result => {
+                commit("PUSH_SERVICE", result.data.obj);
             },
             error => {
                 return error;

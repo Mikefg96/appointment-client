@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import Toasted from 'vue-toasted'; 
+
 import Home from '../views/Home.vue'
 import Services from '../views/Services.vue'
 import Appointments from '../views/Appointments'
@@ -30,4 +32,8 @@ const router = new VueRouter({
 	routes
 });
 
-export default router
+Vue.use(Toasted, {
+    router
+});
+
+export default router;

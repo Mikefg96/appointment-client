@@ -1,19 +1,48 @@
 <template>
-    <div class="services-wrapper" v-if="!isRegistering">
-        <div class="row">
-            <div class="col-4" align="center" :key="service._id" v-for="service in availableServices">
-                <d-card>
-                    <d-card-img :src="service.imgUrl" top/>
-                    <d-card-body>
-                        <h3>{{service.name}}</h3>
-                        <p>${{service.price}}</p>
-                    </d-card-body>
-                    <d-card-footer>
-                        <d-btn theme="info" @click="loadRegisterForm(service)">Agendar cita</d-btn>
-                    </d-card-footer>
-                </d-card>
-            </div>
+    <div class="services-wrapper" v-if="!isRegisteringAppointment && !isRegisteringService">
+        <div>
+            <d-card>
+                <d-card-body>
+                    <table class="table tc">
+                        <thead class="bg-light">
+                            <tr>
+                                <th scope="col" class="border-0">#</th>
+                                <th scope="col" class="border-0">Tipo de Cita</th>
+                                <th scope="col" class="border-0">Costo</th>
+                                <th scope="col" class="border-0">Disponibilidad</th>
+                                <th scope="col" class="border-0"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr :key="service._id" v-for="(service, index) in availableServices">
+                                <td>{{ index + 1 }}</td>
+                                <td>{{ service.name }}</td>
+                                <td>${{ service.price }}</td>
+                                <td>
+                                    <d-badge theme="success">DISPONIBLE</d-badge>
+                                </td>
+                                <td>
+                                    <d-btn class="btnLoadAppointmentForm" theme="info" @click="loadAppointmentRegisterForm(service)" outline>Agendar cita</d-btn>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </d-card-body>
+            </d-card>
+            <d-btn id="btnReturnToLanding" theme="danger" class="fr mt2" outline @click="returnToLanding()">Regresar</d-btn>
+            <d-btn id="btnLoadServiceRegister" theme="success" class="fr mt2 mr2" @click="loadServiceRegisterForm()">+ Servicio</d-btn>
         </div>
+    </div>
+    <div class="serviceRegister-wrapper" v-else-if="!isRegisteringAppointment && isRegisteringService">
+        <d-card style="max-width: 300px">
+            <d-card-header>Adición de servicio</d-card-header>
+            <d-card-body>
+                <d-input class="mb2" placeholder="Nombre" v-model="serviceName" name="serviceName"/>
+                <d-input class="mb2" placeholder="Precio" type="number" v-model="servicePrice" name="servicePrice"/>
+                <d-button id="btnAddService" class="mt2 mr2" theme="success" @click="addService()">Añadir</d-button>
+                <d-button class="mt2 ml2 btnReturnToServices" theme="danger" outline @click="returnToServices()">Regresar</d-button>
+            </d-card-body>
+        </d-card>
     </div>
     <div class="register-wrapper" v-else>
         <div class="row">
@@ -24,13 +53,11 @@
                 <d-card style="max-width: 300px">
                     <d-card-header>{{ serviceToRegister.name }}</d-card-header>
                     <d-card-body>
-                        <!-- <d-form> -->
-                            <d-input class="mb2" placeholder="Nombre" v-model="name" name="name"/>
-                            <d-input class="mb2" placeholder="Apellido" v-model="lastName" name="lastName"/>
-                            <VueCtkDateTimePicker v-model="appointmentDate"></VueCtkDateTimePicker>
-                            <d-button id="btnRegister" class="mt2 mr2" theme="success" @click="addAppointment()">Agendar</d-button>
-                            <d-button class="mt2 ml2" theme="danger" outline @click="returnToServices()">Regresar</d-button>
-                        <!-- </d-form> -->
+                        <d-input class="mb2" placeholder="Nombre" v-model="name" name="name"/>
+                        <d-input class="mb2" placeholder="Apellido" v-model="lastName" name="lastName"/>
+                        <VueCtkDateTimePicker v-model="appointmentDate"></VueCtkDateTimePicker>
+                        <d-button id="btnRegister" class="mt2 mr2" theme="success" @click="addAppointment()">Agendar</d-button>
+                        <d-button class="mt2 ml2 btnReturnToServices" theme="danger" outline @click="returnToServices()">Regresar</d-button>
                     </d-card-body>
                     <d-card-footer class="tl">Costo: ${{serviceToRegister.price}}</d-card-footer>
                 </d-card>
@@ -48,22 +75,35 @@ export default {
     name: 'services',
     data() {
         return {
-            isRegistering: false,
+            isRegisteringAppointment: false,
             serviceToRegister: {},
-            appointmentDate: null
+            name: null,
+            lastName: null,
+            appointmentDate: null,
+            isRegisteringService: false,
+            serviceName: null,
+            servicePrice: null
         }
     },
     methods: {
         getServices() {
             this.$store.dispatch(`${servicesModule}/getServices`);
         },
-        loadRegisterForm(service) {
-            this.isRegistering = true;
+        loadServiceRegisterForm() {
+            this.isRegisteringAppointment = false;
+            this.isRegisteringService = true;
+        },
+        loadAppointmentRegisterForm(service) {
+            this.isRegisteringAppointment = true;
             this.serviceToRegister = service;
         },
         returnToServices() {
-            this.isRegistering = false;
+            this.isRegisteringAppointment = false;
+            this.isRegisteringService = false;
             this.serviceToRegister = {}
+        },
+        returnToLanding() {
+            this.$router.push({ path: '/' });
         },
         addAppointment() {
             const appointment = {
@@ -72,9 +112,38 @@ export default {
                 date: this.appointmentDate,
                 service_id: this.serviceToRegister._id
             }
-            
+
             this.$store.dispatch(`${appointmentsModule}/createAppointment`, appointment);
-            this.$router.push({ path: '/' });
+            this.$router.push({ path: '/' }).then(() => {
+                this.$toasted.show("¡Has agendado exitosamente la cita!", {
+                    type: "success",
+                    action: {
+                        text: "Okay",
+                        onClick: (e, toastObject) => {
+                            toastObject.goAway(0);
+                        }
+                    }
+                });
+            });
+        },
+        addService() {
+            const service = {
+                name: this.serviceName,
+                price: this.servicePrice
+            }
+
+            this.$store.dispatch(`${servicesModule}/createService`, service).then(() => {
+                this.$toasted.show("¡El servicio ha sido añadido!", {
+                    type: "success",
+                    action: {
+                        text: "Okay",
+                        onClick: (e, toastObject) => {
+                            toastObject.goAway(0);
+                        }
+                    }
+                });
+                this.isRegisteringService = false;  
+            });
         }
     },
     computed: {
@@ -89,41 +158,20 @@ export default {
 <style lang="scss" scoped>
 	@import url('https://fonts.googleapis.com/css?family=Raleway:100,400,600&display=swap');
 
-    .services-wrapper {
+    .services-wrapper,
+    .register-wrapper,
+    .serviceRegister-wrapper {
         height: 100vh;
         width: 100%;
         background-color: #f5f8ff;
-        overflow: hidden;
 
-        display: flex;
+        display: flex; 
+        flex-direction: column;
         align-items: center;
-
-        .card {
-            height: 100%;
-            width: 75%;
-
-            img {
-                height: 30vh;
-            }
-
-            .card-body {
-                text-align: center;
-
-                h3 { font-family: 'Raleway', sans-serif; font-weight: 600; font-size: 2.5em; }
-                p { font-weight: 100; font-size: 3em; }
-            }
-
-            .card-footer {
-                text-align: right;
-            }
-        }
+        justify-content: center;
     }
 
     .register-wrapper {
-        height: 100vh;
-        width: 100%;
-        background-color: #f5f8ff;
-
         .row {
             height: 100%;
             width: 100%;
